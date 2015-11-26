@@ -19,6 +19,7 @@ Once you have the ElasticEmail library properly referenced in your project, you 
 Add the following namespaces to use the library:
 ```csharp
 using CAIRO.ElasticEmail;
+using System.Net.Mail;
 ```
 
 #How to: Create an email
@@ -32,8 +33,8 @@ The following example demonstrates how to create an email object and populate it
 var myMessage = new Mail();
 
 // Add the message properties.
-myMessage.FromAddress = "john@example.com";
-myMessage.ToAddress = "marc@example.com";
+myMessage.From = new MailAddress("john@example.com");
+myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 
 // Add Text body
@@ -55,8 +56,8 @@ To send an email message, use the **Send** method on the **Web** transport class
 ```csharp
 // Create the email object first, then add the properties.
 Mail myMessage = new Mail();
-myMessage.ToAddress = "anna@example.com";
-myMessage.FromAddress = "john@example.com";
+myMessage.From = new MailAddress("john@example.com");
+myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
@@ -73,8 +74,8 @@ Attachments can be added to a message by calling the **AddAttachment** method an
 
 ```csharp
 Mail myMessage = new Mail();
-myMessage.ToAddress = "anna@example.com";
-myMessage.FromAddress = "john@example.com";
+myMessage.From = new MailAddress("john@example.com");
+myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
@@ -85,8 +86,8 @@ You can also add attachments by passing in the **byte[]** of the data. It can be
 
 ```csharp
 Mail myMessage = new Mail();
-myMessage.ToAddress = "anna@example.com";
-myMessage.FromAddress = "john@example.com";
+myMessage.From = new MailAddress("john@example.com");
+myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
