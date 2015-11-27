@@ -41,17 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeliveryStatus.cs" />
+    <Compile Include="DeliveryStatusResponse.cs" />
     <Compile Include="ElasticemailMessage.cs" />
     <Compile Include="ElasticemailWebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ResultType.cs" />
+    <Compile Include="XmlResponseTypes\job.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CAIRO.ElasticEmail.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="nuget.exe" />
     <Content Include="readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

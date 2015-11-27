@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added simple message validation</releaseNotes>
+    <releaseNotes>New Method: GetDeliveryStatus</releaseNotes>
     <projectUrl>https://github.com/MarcDrexler/CAIRO.ElasticEmail</projectUrl>
     <copyright>Copyright 2015</copyright>
     <tags>elasticemail elastic email</tags>

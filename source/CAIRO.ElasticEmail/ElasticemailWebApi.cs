@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Xml.Serialization;
 
 namespace CAIRO.ElasticEmail
 {
@@ -90,6 +91,54 @@ namespace CAIRO.ElasticEmail
             }
 
             return result;
+        }
+
+        public DeliveryStatusResponse GetDeliveryStatus(Guid transactionId)
+        {
+            var response = new DeliveryStatusResponse();
+
+            try
+            {
+                var request = WebRequest.Create("https://api.elasticemail.com/mailer/status/" + transactionId);
+                Stream stream = request.GetResponse().GetResponseStream();
+                var xmlString = new StreamReader(stream, Encoding.UTF8).ReadToEnd();
+                if (xmlString.ToLower().StartsWith("no job with transactionid"))
+                {
+                    response.ErrorMessage = xmlString;
+                    response.ResultType = ResultType.Error;
+                }
+                else
+                {
+                    try
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(job));
+                        StringReader rdr = new StringReader(xmlString);
+                        var job = (job)serializer.Deserialize(rdr);
+                        var deliveryStatus = new DeliveryStatus();
+                        deliveryStatus.Id = transactionId;
+                        deliveryStatus.Recipients = job.recipients;
+                        deliveryStatus.Delivered = job.delivered;
+                        deliveryStatus.Failed = job.failed;
+                        deliveryStatus.Pending = job.pending;
+                        deliveryStatus.Status = job.status;
+
+                        response.DeliveryStatus = deliveryStatus;
+                        response.ResultType = ResultType.Success;
+                    }
+                    catch (Exception ex)
+                    {
+                        response.ErrorMessage = "Could not deserialize message: " + Environment.NewLine + ex.ToString();
+                        response.ResultType = ResultType.Error;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.ToString();
+                response.ResultType = ResultType.Error;
+            }
+
+            return response;
         }
 
         private bool IsValid(ElasticemailMessage msg, out string validationErrors)

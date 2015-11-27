@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿using System;
+using System.Net.Mail;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CAIRO.ElasticEmail.Tests
@@ -76,6 +77,31 @@ namespace CAIRO.ElasticEmail.Tests
 
             Assert.AreEqual(ResultType.Success, actual.ResultType);
             Assert.IsNotNull(actual.TransactionId);
+        }
+
+        [TestMethod]
+        public void GetDeliveryStatus_Valid_TransactionId()
+        {
+            Guid id = Guid.Parse("53b12541-210e-49b3-b57a-dd64e09cde5f");
+            var target = new ElasticemailWebApi(_username, _apiKey);
+            
+            var actual = target.GetDeliveryStatus(id);
+
+            Assert.AreEqual(ResultType.Success, actual.ResultType);
+            Assert.AreEqual(id, actual.DeliveryStatus.Id);
+            Assert.AreEqual(1, actual.DeliveryStatus.Delivered);
+            Assert.AreEqual("complete", actual.DeliveryStatus.Status);
+        }
+
+        [TestMethod]
+        public void GetDeliveryStatus_Invalid_TransactionId()
+        {
+            var target = new ElasticemailWebApi(_username, _apiKey);
+
+            var actual = target.GetDeliveryStatus(Guid.Parse("53b12541-1234-49b3-b57a-dd64e09cde5f"));
+
+            Assert.AreEqual(ResultType.Error, actual.ResultType);
+            Assert.AreEqual("No job with transactionId 53b12541-1234-49b3-b57a-dd64e09cde5f could be found.", actual.ErrorMessage);
         }
     }
 }
