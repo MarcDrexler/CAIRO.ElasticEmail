@@ -30,7 +30,7 @@ The following example demonstrates how to create an email object and populate it
 
 ```csharp
 // Create the email object first, then add the properties.
-var myMessage = new Mail();
+var myMessage = new ElasticemailMessage();
 
 // Add the message properties.
 myMessage.From = new MailAddress("john@example.com");
@@ -51,18 +51,18 @@ After creating an email message, you can send it using the Web API provided by E
 
 Sending email requires that you supply your Elasticemail username and API Key.
 
-To send an email message, use the **Send** method on the **Web** transport class, which calls the SendGrid Web API. The following example shows how to send a message.
+To send an email message, use the **Send** method on the **ElasticemailWebApi** class, which calls the Elasticemail Web API. The following example shows how to send a message.
 
 ```csharp
 // Create the email object first, then add the properties.
-Mail myMessage = new Mail();
+Mail myMessage = new ElasticemailMessage();
 myMessage.From = new MailAddress("john@example.com");
 myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
 // Create a Client, using API Key
-var client = new MailSender("username", "apiKey");
+var client = new ElasticemailWebApi("username", "apiKey");
 
 // Send the email.
 client.Send(myMessage);
@@ -73,7 +73,7 @@ client.Send(myMessage);
 Attachments can be added to a message by calling the **AddAttachment** method and specifying the name and path of the file you want to attach, or by passing a byte array. You can include multiple attachments by calling this method once for each file you wish to attach. The following example demonstrates adding an attachment to a message:
 
 ```csharp
-Mail myMessage = new Mail();
+Mail myMessage = new ElasticemailMessage();
 myMessage.From = new MailAddress("john@example.com");
 myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
@@ -85,7 +85,7 @@ myMessage.AddAttachment(@"C:\file1.txt");
 You can also add attachments by passing in the **byte[]** of the data. It can be done by calling the same method as above, **AddAttachment**, but by passing two parameters, the data and the filename you want it to show as in the message.
 
 ```csharp
-Mail myMessage = new Mail();
+Mail myMessage = new ElasticemailMessage();
 myMessage.From = new MailAddress("john@example.com");
 myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
