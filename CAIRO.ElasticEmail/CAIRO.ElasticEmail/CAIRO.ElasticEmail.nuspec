@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Added simple message validation</releaseNotes>
+    <projectUrl>https://github.com/MarcDrexler/CAIRO.ElasticEmail</projectUrl>
+    <copyright>Copyright 2015</copyright>
+    <tags>elasticemail elastic email</tags>
+  </metadata>
+  <files>
+    <file src="readme.txt" target="" />
+  </files>
+</package>
