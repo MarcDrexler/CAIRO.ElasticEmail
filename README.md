@@ -1,6 +1,6 @@
 # CAIRO.ElasticEmail
 
-This is just a simple wrapper to send emails easier with the Elastic Email HTTP API.
+This is just a simple (inofficial) wrapper to send emails easier with the Elastic Email HTTP API.
 Elastic Email is a powerful email platform built from the ground up to send your email efficiently.
 Read more on www.elasticemail.com
 
