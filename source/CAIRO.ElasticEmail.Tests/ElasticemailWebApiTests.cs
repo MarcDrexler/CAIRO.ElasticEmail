@@ -7,7 +7,7 @@ namespace CAIRO.ElasticEmail.Tests
     [TestClass]
     public class ElasticemailWebApiTests
     {
-        private string _apiKey = "7133bcc9-f4a1-41fb-a786-6ff24380e9d2";
+        private string _apiKey = "";
 
         [TestMethod]
         public void SendUnauthorized()
@@ -83,7 +83,7 @@ namespace CAIRO.ElasticEmail.Tests
         {
             Guid id = Guid.Parse("53b12541-210e-49b3-b57a-dd64e09cde5f");
             var target = new ElasticemailWebApi(_apiKey);
-            
+
             var actual = target.GetDeliveryStatus(id);
 
             Assert.AreEqual(ResultType.Success, actual.ResultType);
