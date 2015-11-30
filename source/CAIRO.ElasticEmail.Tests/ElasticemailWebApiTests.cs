@@ -7,13 +7,12 @@ namespace CAIRO.ElasticEmail.Tests
     [TestClass]
     public class ElasticemailWebApiTests
     {
-        private string _username = "";
-        private string _apiKey = "";
+        private string _apiKey = "7133bcc9-f4a1-41fb-a786-6ff24380e9d2";
 
         [TestMethod]
         public void SendUnauthorized()
         {
-            var target = new ElasticemailWebApi("unknownUser", "invalidApiKey");
+            var target = new ElasticemailWebApi("invalidApiKey");
             var mail = new ElasticemailMessage();
             mail.From = new MailAddress("john@example.com", "John");
             mail.To.Add(new MailAddress("anna@example.com", "Anna"));
@@ -26,7 +25,7 @@ namespace CAIRO.ElasticEmail.Tests
         [TestMethod]
         public void ErrorMessage_If_From_Address_Is_Missing()
         {
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
             var actual = target.Send(new ElasticemailMessage());
 
             Assert.AreEqual(ResultType.Error, actual.ResultType);
@@ -36,7 +35,7 @@ namespace CAIRO.ElasticEmail.Tests
         [TestMethod]
         public void ErrorMessage_If_To_Address_Is_Missing()
         {
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
             var mail = new ElasticemailMessage();
             mail.From = new MailAddress("john@example.com", "John");
             var actual = target.Send(mail);
@@ -48,7 +47,7 @@ namespace CAIRO.ElasticEmail.Tests
         [TestMethod]
         public void Send_Email_Returns_TransactionId()
         {
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
             var mail = new ElasticemailMessage();
             mail.To.Add(new MailAddress("md@cairo.ag"));
             mail.From = new MailAddress("md@cairo.ag", "Marc");
@@ -64,7 +63,7 @@ namespace CAIRO.ElasticEmail.Tests
         [TestMethod]
         public void Send_Email_With_Attachment()
         {
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
             var mail = new ElasticemailMessage();
             mail.To.Add(new MailAddress("md@cairo.ag", "Marc"));
             mail.From = new MailAddress("md@cairo.ag", "Marc");
@@ -83,7 +82,7 @@ namespace CAIRO.ElasticEmail.Tests
         public void GetDeliveryStatus_Valid_TransactionId()
         {
             Guid id = Guid.Parse("53b12541-210e-49b3-b57a-dd64e09cde5f");
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
             
             var actual = target.GetDeliveryStatus(id);
 
@@ -96,7 +95,7 @@ namespace CAIRO.ElasticEmail.Tests
         [TestMethod]
         public void GetDeliveryStatus_Invalid_TransactionId()
         {
-            var target = new ElasticemailWebApi(_username, _apiKey);
+            var target = new ElasticemailWebApi(_apiKey);
 
             var actual = target.GetDeliveryStatus(Guid.Parse("53b12541-1234-49b3-b57a-dd64e09cde5f"));
 

@@ -11,12 +11,10 @@ namespace CAIRO.ElasticEmail
 {
     public class ElasticemailWebApi
     {
-        private readonly string _username;
         private readonly string _apiKey;
 
-        public ElasticemailWebApi(string username, string apiKey)
+        public ElasticemailWebApi(string apiKey)
         {
-            _username = username;
             _apiKey = apiKey;
         }
 
@@ -31,7 +29,6 @@ namespace CAIRO.ElasticEmail
                 {
                     var client = new WebClient();
                     var values = new NameValueCollection();
-                    values.Add("username", _username);
                     values.Add("api_key", _apiKey);
                     values.Add("from", msg.From.Address);
                     values.Add("from_name", msg.From.DisplayName);
@@ -46,10 +43,7 @@ namespace CAIRO.ElasticEmail
                         values.Add("body_text", msg.Body);
                     }
 
-                    if (msg.ReplyTo != null)
-                    {
-                        values.Add("reply_to", msg.ReplyTo.Address);
-                    }
+                    if (msg.ReplyTo != null) values.Add("reply_to", msg.ReplyTo.Address);
                     
                     var attachmentIds = new List<string>();
                     foreach (var attachment in msg.Attachments)
@@ -58,6 +52,7 @@ namespace CAIRO.ElasticEmail
                         var attId = UploadAttachment(attachment.Key, attachment.Value);
                         attachmentIds.Add(attId);
                     }
+
                     if (attachmentIds.Any())
                     {
                         values.Add("attachments", string.Join(";", attachmentIds));
@@ -160,7 +155,7 @@ namespace CAIRO.ElasticEmail
         private string UploadAttachment(string filename, byte[] content)
         {
             var stream = new MemoryStream(content);
-            var request = WebRequest.Create("https://api.elasticemail.com/attachments/upload?username=" + _username + "&api_key=" + _apiKey + "&file=" + filename);
+            var request = WebRequest.Create("https://api.elasticemail.com/attachments/upload?api_key=" + _apiKey + "&file=" + filename);
             
             request.Method = "PUT";
             request.ContentLength = stream.Length;
