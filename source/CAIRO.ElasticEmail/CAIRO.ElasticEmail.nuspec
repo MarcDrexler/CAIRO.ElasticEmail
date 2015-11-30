@@ -8,7 +8,8 @@
     <owners>$author$</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>New Method: GetDeliveryStatus</releaseNotes>
+    <releaseNotes>Added retry logic (in case of a temporary network outage)
+    Username is not needed anymore</releaseNotes>
     <projectUrl>https://github.com/MarcDrexler/CAIRO.ElasticEmail</projectUrl>
     <copyright>Copyright 2015</copyright>
     <tags>elasticemail elastic email</tags>

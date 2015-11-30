@@ -41,13 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="DeliveryStatus.cs" />
     <Compile Include="DeliveryStatusResponse.cs" />
     <Compile Include="ElasticemailMessage.cs" />
     <Compile Include="ElasticemailWebApi.cs" />
+    <Compile Include="RetryImplementation\InfiniteRetryStrategy.cs" />
+    <Compile Include="RetryImplementation\DefaultRetryStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ResultType.cs" />
+    <Compile Include="RetryImplementation\RetryLogic.cs" />
+    <Compile Include="RetryImplementation\RetryStrategy.cs" />
     <Compile Include="XmlResponseTypes\job.cs" />
   </ItemGroup>
   <ItemGroup>
