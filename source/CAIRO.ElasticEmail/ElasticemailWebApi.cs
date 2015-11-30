@@ -11,11 +11,14 @@ namespace CAIRO.ElasticEmail
 {
     public class ElasticemailWebApi
     {
-        private readonly string _apiKey;
+        private readonly Configuration _configuration;
+
+        public Configuration Configuration => _configuration;
 
         public ElasticemailWebApi(string apiKey)
         {
-            _apiKey = apiKey;
+            _configuration = new Configuration();
+            _configuration.ApiKey = apiKey;
         }
 
         public SendResult Send(ElasticemailMessage msg)
@@ -25,58 +28,44 @@ namespace CAIRO.ElasticEmail
             try
             {
                 string validationErrors;
-                if (IsValid(msg, out validationErrors))
-                {
-                    var client = new WebClient();
-                    var values = new NameValueCollection();
-                    values.Add("api_key", _apiKey);
-                    values.Add("from", msg.From.Address);
-                    values.Add("from_name", msg.From.DisplayName);
-                    values.Add("to", string.Join(";", msg.To.Select(x => x.Address)));
-                    values.Add("subject", msg.Subject);
-                    if (msg.IsBodyHtml)
-                    {
-                        values.Add("body_html", msg.Body);
-                    }
-                    else
-                    {
-                        values.Add("body_text", msg.Body);
-                    }
-
-                    if (msg.ReplyTo != null) values.Add("reply_to", msg.ReplyTo.Address);
-                    
-                    var attachmentIds = new List<string>();
-                    foreach (var attachment in msg.Attachments)
-                    {
-                        //once an attachment has been uploaded once you can use it in multiple calls to send elastic email.
-                        var attId = UploadAttachment(attachment.Key, attachment.Value);
-                        attachmentIds.Add(attId);
-                    }
-
-                    if (attachmentIds.Any())
-                    {
-                        values.Add("attachments", string.Join(";", attachmentIds));
-                    }
-
-                    var response = client.UploadValues("https://api.elasticemail.com/mailer/send", values);
-                    var responseString = Encoding.UTF8.GetString(response);
-
-                    Guid guid;
-                    if (Guid.TryParse(responseString, out guid))
-                    {
-                        result.TransactionId = guid;
-                        result.ResultType = ResultType.Success;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = responseString;
-                        result.ResultType = ResultType.Error;
-                    }
-                }
-                else
+                if (!IsValid(msg, out validationErrors))
                 {
                     result.ResultType = ResultType.Error;
                     result.ErrorMessage = validationErrors;
+                    return result;
+                }
+
+                var client = new WebClient();
+                var values = new NameValueCollection();
+                values.Add("api_key", _configuration.ApiKey);
+                values.Add("from", msg.From.Address);
+                values.Add("from_name", msg.From.DisplayName);
+                values.Add("to", string.Join(";", msg.To.Select(x => x.Address)));
+                values.Add("subject", msg.Subject);
+                values.Add(msg.IsBodyHtml ? "body_html" : "body_text", msg.Body);
+                if (msg.ReplyTo != null) values.Add("reply_to", msg.ReplyTo.Address);
+
+                var attachmentIds = new List<string>();
+                foreach (var attachment in msg.Attachments)
+                {
+                    var attId = UploadAttachment(attachment.Key, attachment.Value);
+                    attachmentIds.Add(attId);
+                }
+                if (attachmentIds.Any()) values.Add("attachments", string.Join(";", attachmentIds));
+
+                var response = new RetryLogic(_configuration.PreferredRetryStrategy).Execute(() => client.UploadValues("https://api.elasticemail.com/mailer/send", values));
+                var responseString = Encoding.UTF8.GetString(response);
+
+                Guid guid;
+                if (Guid.TryParse(responseString, out guid))
+                {
+                    result.TransactionId = guid;
+                    result.ResultType = ResultType.Success;
+                }
+                else
+                {
+                    result.ErrorMessage = responseString;
+                    result.ResultType = ResultType.Error;
                 }
             }
             catch (Exception ex)
@@ -95,7 +84,7 @@ namespace CAIRO.ElasticEmail
             try
             {
                 var request = WebRequest.Create("https://api.elasticemail.com/mailer/status/" + transactionId);
-                Stream stream = request.GetResponse().GetResponseStream();
+                Stream stream = new RetryLogic(_configuration.PreferredRetryStrategy).Execute(() => request.GetResponse().GetResponseStream());
                 var xmlString = new StreamReader(stream, Encoding.UTF8).ReadToEnd();
                 if (xmlString.ToLower().StartsWith("no job with transactionid"))
                 {
@@ -122,7 +111,7 @@ namespace CAIRO.ElasticEmail
                     }
                     catch (Exception ex)
                     {
-                        response.ErrorMessage = "Could not deserialize message: " + Environment.NewLine + ex.ToString();
+                        response.ErrorMessage = "Could not deserialize message: " + Environment.NewLine + ex;
                         response.ResultType = ResultType.Error;
                     }
                 }
@@ -155,17 +144,21 @@ namespace CAIRO.ElasticEmail
         private string UploadAttachment(string filename, byte[] content)
         {
             var stream = new MemoryStream(content);
-            var request = WebRequest.Create("https://api.elasticemail.com/attachments/upload?api_key=" + _apiKey + "&file=" + filename);
-            
+            var request = WebRequest.Create("https://api.elasticemail.com/attachments/upload?api_key=" + _configuration.ApiKey + "&file=" + filename);
             request.Method = "PUT";
             request.ContentLength = stream.Length;
-            var outstream = request.GetRequestStream();
-            stream.CopyTo(outstream, 4096);
-            stream.Close();
-            var response = request.GetResponse();
-            var result = new StreamReader(response.GetResponseStream(), Encoding.UTF8).ReadToEnd();
-            response.Close();
-            return result;
+
+            string attachmentId = null;
+            new RetryLogic(_configuration.PreferredRetryStrategy).Execute(() =>
+            {
+                var outstream = request.GetRequestStream();
+                stream.CopyTo(outstream, 4096);
+                stream.Close();
+                var response = request.GetResponse();
+                attachmentId = new StreamReader(response.GetResponseStream(), Encoding.UTF8).ReadToEnd();
+                response.Close();
+            });
+            return attachmentId;
         }
     }
 }
