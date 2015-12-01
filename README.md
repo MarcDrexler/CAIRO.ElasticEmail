@@ -27,7 +27,7 @@ using System.Net.Mail;
 
 #How to: Create an email
 
-Use the static **new Mail** constructor to create an email message that is of type **Mail**. Once the message is created, you can use **Mail** properties and methods to set values including the email sender, the email recipient, and the subject and body of the email.
+Use the **new ElasticemailMessage** constructor to create an email message that is of type **ElasticemailMessage**. Once the message is created, you can use **ElasticemailMessage** properties and methods to set values including the email sender, the email recipient, and the subject and body of the email.
 
 The following example demonstrates how to create an email object and populate it:
 
@@ -54,7 +54,7 @@ After creating an email message, you can send it using the Web API provided by E
 
 Sending email requires that you supply your Elasticemail username and API Key.
 
-To send an email message, use the **Send** method on the **ElasticemailWebApi** class, which calls the Elasticemail Web API. The following example shows how to send a message.
+To send an email message, use the **Send** method on the **ElasticemailWebApi** class, which calls the Elasticemail Web API. The following example shows how to send a message. The response is of type **SendResult** and contains a property **transactionId**. You can use this id to query the delivery status at a later time with the **GetDeliveryStatus** Method.
 
 ```csharp
 // Create the email object first, then add the properties.
@@ -64,11 +64,11 @@ myMessage.To.Add(new MailAddress("anna@example.com");
 myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
-// Create a Client, using API Key
+// Create a Client, using API Key.
 var client = new ElasticemailWebApi("apiKey");
 
 // Send the email.
-client.Send(myMessage);
+SendResult result = client.Send(myMessage);
 ```
 
 #How to: Add an Attachment
@@ -104,9 +104,9 @@ Use this command to determine if your transactional email delivery was successfu
 
 ```csharp
 var client = new ElasticemailWebApi("apiKey");
-DeliveryStatusResponse response = client.GetDeliveryStatus(Guid.Parse("53b12541-210e-49b3-b57a-dd64e09cde5f"));
+DeliveryStatusResponse response = client.GetDeliveryStatus(Guid.Parse("transactionId"));
 if (response.DeliveryStatus.Status == "success")
 {
-    // ...
+    ...
 }
 ```
