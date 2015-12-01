@@ -100,13 +100,16 @@ myMessage.AddAttachment("MyFile.txt", data);
 
 #How to: Get Delivery Status
 
-Use this command to determine if your transactional email delivery was successful.
+Use the **GetDeliveryStatus** method to determine if your transactional email delivery was successful. The **DeliveryStatus** object will also tell you how many emails were delivered, failed or still pending.
 
 ```csharp
 var client = new ElasticemailWebApi("apiKey");
 DeliveryStatusResponse response = client.GetDeliveryStatus(Guid.Parse("transactionId"));
-if (response.DeliveryStatus.Status == "success")
+if (response.DeliveryStatus.Status == "complete")
 {
+    response.DeliveryStatus.Delivered
+    response.DeliveryStatus.Failed
+    response.DeliveryStatus.Pending
     ...
 }
 ```
