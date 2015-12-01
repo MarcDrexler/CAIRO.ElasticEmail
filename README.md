@@ -65,7 +65,7 @@ myMessage.Subject = "Testing the Elasticemail Library";
 myMessage.Text = "Hello World!";
 
 // Create a Client, using API Key
-var client = new ElasticemailWebApi("username", "apiKey");
+var client = new ElasticemailWebApi("apiKey");
 
 // Send the email.
 client.Send(myMessage);
@@ -96,4 +96,17 @@ myMessage.Text = "Hello World!";
 
 byte[] data = File.ReadAllBytes(@"C:\file1.txt");
 myMessage.AddAttachment("MyFile.txt", data);
+```
+
+#How to: Get Delivery Status
+
+Use this command to determine if your transactional email delivery was successful.
+
+```csharp
+var client = new ElasticemailWebApi("apiKey");
+DeliveryStatusResponse response = client.GetDeliveryStatus(Guid.Parse("53b12541-210e-49b3-b57a-dd64e09cde5f"));
+if (response.DeliveryStatus.Status == "success")
+{
+    // ...
+}
 ```
